@@ -35,8 +35,14 @@
 		"npm": ">=1.2.10"
 	},
 	"files": [
+		"index.js",
 		"vendor",
-		"butfile.js"
+		"butfile.js",
+		"test",
+		".editorconfig",
+		".gitattributes",
+		".gitignore",
+		""
 	],
 	"license": "MIT"
 }
