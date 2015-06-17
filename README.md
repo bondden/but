@@ -3,7 +3,7 @@ Node.Js module for backuping, restoring and updating files with Yandex.Disk.
 
 ## Installation
 ```sh
-$ npm install but
+$ npm install esf-but
 ```
 
 ## Usage
