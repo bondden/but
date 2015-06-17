@@ -37,7 +37,7 @@
   "files": [
     "vendor",
     "test",
-    ".tmp",
+    "test/d/.tmp",
     "index.js",
     "butfile.json",
     ".gitattributes",
