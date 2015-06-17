@@ -11,7 +11,8 @@ var
 	path      =require('path'),
 	but  	    =require('../index.js'),
 
-	butfile   =path.resolve(__dirname+'/../butfile.json')
+	butfile   =path.resolve(__dirname+'/../butfile.json'),
+	remoteTimeout=10000
 ;
 
 describe('BUT Test Suite',function(){
@@ -115,22 +116,48 @@ describe('BUT Test Suite',function(){
 
 	});
 
-	it('It should have access to Yandex.Disk',function(){
+	it('It should have access to Yandex.Disk',function(done){
+		this.timeout(remoteTimeout);
 
-
+		but.sendFilesToYaDisk().then(function(r){
+			done();
+		}).catch(function(e){
+			done(e);
+		});
 
 	});
 
 	it('It should download a test file',function(){
-		throw new Error('Empty test');
+		this.timeout(remoteTimeout);
+
+		but.download().then(function(r){
+			done();
+		}).catch(function(e){
+			done(e);
+		});
+
 	});
 
 	it('It should backup a test file',function(){
-		throw new Error('Empty test');
+		this.timeout(remoteTimeout);
+
+		but.backup().then(function(r){
+			done();
+		}).catch(function(e){
+			done(e);
+		});
+
 	});
 
 	it('It should restore a test file',function(){
-		throw new Error('Empty test');
+		this.timeout(remoteTimeout);
+
+		but.restore().then(function(r){
+			done();
+		}).catch(function(e){
+			done(e);
+		});
+
 	});
 
 });

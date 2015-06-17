@@ -14,18 +14,18 @@
 		}
 	},
 	"backup":{
-		"description":"Config for Yandex.Disk",
-		"token":"yandexDiskToken",
+		"description":"Config for Yandex.Disk. Change ${YOUR_TOKEN} to yours. Get your token here: https://tech.yandex.ru/oauth/doc/dg/concepts/about-docpage/",
+		"token":"${YOUR_TOKEN}",
 		"url":"https://cloud-api.yandex.net/v1/disk/",
 		"pathsToBackup":[
 			"b:/os52/dmn/esf4.loc/node_modules/but/test/d/p1/",
 			"b:/os52/dmn/esf4.loc/node_modules/but/test/d/p2/"
 		],
 		"tmpDir":"b:/os52/dmn/esf4.loc/node_modules/but/test/d/.tmp/",
-		"remoteRoot":"remotePath",
+		"remoteRoot":"/but/tst/",
 		"crypt":{
 			"alg":"aes-256-ctr",
-			"pass":"password"
+			"pass":"test"
 		},
 		"maxRemoteVersions":3
 	},
