@@ -5,7 +5,7 @@
 		"paths":[
 			{
 				"fromUrl"   :"https://gist.githubusercontent.com/bondden/6b92dc70153a70c4f70c/raw/b9a3874d69dd6f9701fe893dfe01896b20378523/gistfile1.txt",
-				"toInstall" :"b:/os52/dmn/esf4.loc/node_modules/esf-but/test/d/p1/tst.txt"
+				"toInstall" :"test/d/p1/tst.txt"
 			}
 		],
 		"basicAuth":{
@@ -18,10 +18,10 @@
 		"token":"${YOUR_TOKEN}",
 		"url":"https://cloud-api.yandex.net/v1/disk/",
 		"pathsToBackup":[
-			"b:/os52/dmn/esf4.loc/node_modules/esf-but/test/d/p1/",
-			"b:/os52/dmn/esf4.loc/node_modules/esf-but/test/d/p2/"
+			"test/d/p1/",
+			"test/d/p2/"
 		],
-		"tmpDir":"b:/os52/dmn/esf4.loc/node_modules/esf-but/test/d/.tmp/",
+		"tmpDir":"test/d/.tmp/",
 		"remoteRoot":"/but/tst/",
 		"crypt":{
 			"alg":"aes-256-ctr",
@@ -30,7 +30,7 @@
 		"maxRemoteVersions":3
 	},
 	"restore":{
-		"pathSrc":"b:/os52/dmn/esf4.loc/node_modules/esf-but/test/d/.tmp/",
-		"pathDst":"b:/os52/dmn/esf4.loc/node_modules/esf-but/test/d/unpacked/"
+		"pathSrc":"test/d/.tmp/",
+		"pathDst":"test/d/unpacked/"
 	}
 }
