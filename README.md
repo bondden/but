@@ -7,7 +7,7 @@ $ npm install but
 ```
 
 ## Usage
-1. Configure BUT with ```butfile.json```. The sample: ```.butfile.sample.json```
+1. Configure BUT with ```butfile.json```.
 2. Use API:
 
 | Command 				| Description |
