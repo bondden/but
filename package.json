@@ -37,11 +37,11 @@
   "files": [
     "vendor",
     "test",
-    "./index.js",
-    "./butfile.js",
-    "./.gitattributes",
-    "./.gitignore",
-    "./.editorconfig"
+    "index.js",
+    "butfile.json",
+    ".gitattributes",
+    ".gitignore",
+    ".editorconfig"
   ],
   "license": "MIT"
 }
