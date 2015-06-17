@@ -1,33 +1,36 @@
 {
-  "name": "but",
-  "version": "0.3.3",
-  "description": "Backup and Update Tool",
-  "keywords": [
-    "esf",
-    "backup",
-		"yandex-disk"
-    "node",
-    "module"
-  ],
-  "author": "Denis Bondarenko <bond.den@gmail.com>",
-  "main": "index.js",
-  "repository": "",
-  "scripts": {
-  },
-  "dependencies": {
-    "tar-fs":"*",
-    "fs-extra":"*",
-    "node-7z":"*",
-    "yandex-disk":"*"
-  },
-  "devDependencies": {
-  },
-  "engines": {
-    "node": ">=0.12.0",
-    "npm": ">=1.2.10"
-  },
-  "files": [
-    "./vendor/"
-  ],
-  "license": "MIT"
+	"name": "but",
+	"version": "0.3.3",
+	"description": "Backup and Update Tool",
+	"keywords": [
+		"esf",
+		"backup",
+		"yandex-disk",
+		"node",
+		"module"
+	],
+	"author": "Denis Bondarenko <bond.den@gmail.com>",
+	"main": "index.js",
+	"repository": "",
+	"scripts": {
+	},
+	"dependencies": {
+		"tar-fs":"*",
+		"fs-extra":"*",
+		"node-7z":"*",
+		"yandex-disk":"*"
+	},
+	"devDependencies": {
+		"mocha":"*",
+		"chai":"*"
+	},
+	"engines": {
+		"node": ">=0.12.0",
+		"npm": ">=1.2.10"
+	},
+	"files": [
+		"./vendor/",
+		"./butfile.js"
+	],
+	"license": "MIT"
 }

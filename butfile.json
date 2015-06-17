@@ -1,0 +1,36 @@
+{
+	"schemaVersion":"0.2.0",
+	"log":true,
+	"update":{
+		"paths":[
+			{
+				"fromUrl"   :"https://gist.githubusercontent.com/bondden/6b92dc70153a70c4f70c/raw/b9a3874d69dd6f9701fe893dfe01896b20378523/gistfile1.txt",
+				"toInstall" :"b:/os52/dmn/esf4.loc/node_modules/but/test/d/p1/tst.txt"
+			}
+		],
+		"basicAuth":{
+			"user":"userName",
+			"pass":"userPassword"
+		}
+	},
+	"backup":{
+		"description":"Config for Yandex.Disk",
+		"token":"yandexDiskToken",
+		"url":"https://cloud-api.yandex.net/v1/disk/",
+		"pathsToBackup":[
+			"b:/os52/dmn/esf4.loc/node_modules/but/test/d/p1/",
+			"b:/os52/dmn/esf4.loc/node_modules/but/test/d/p2/"
+		],
+		"tmpDir":"b:/os52/dmn/esf4.loc/node_modules/but/test/d/.tmp/",
+		"remoteRoot":"remotePath",
+		"crypt":{
+			"alg":"aes-256-ctr",
+			"pass":"password"
+		},
+		"maxRemoteVersions":3
+	},
+	"restore":{
+		"pathSrc":"b:/os52/dmn/esf4.loc/node_modules/but/test/d/.tmp/",
+		"pathDst":"b:/os52/dmn/esf4.loc/node_modules/but/test/d/unpacked/"
+	}
+}
