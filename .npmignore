@@ -1,0 +1,78 @@
+syntax: glob
+
+!.gitignore
+#vendor/
+!vendor/**/*.exe
+
+# ESF
+
+.idea
+.dld
+.pcs
+.vmgate/*.vpp~*
+.tmp
+~*
+
+logs
+*.log
+
+build/Release
+node_modules
+
+#NodeJs
+
+temp/
+
+pids
+*.pid
+*.seed
+
+lib-cov
+coverage
+.grunt
+.lock-wscript
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
