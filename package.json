@@ -1,6 +1,6 @@
 {
   "name": "esf-but",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Backup and Update Tool - Node.Js module for backuping, restoring and updating files with Yandex.Disk.",
   "keywords": [
     "backup",
