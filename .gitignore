@@ -1,5 +1,6 @@
 syntax: glob
 
+!.gitignore
 #vendor/
 !vendor/**/*.exe
 
@@ -20,7 +21,6 @@ node_modules
 
 #NodeJs
 
-npm-debug.log
 temp/
 
 pids
