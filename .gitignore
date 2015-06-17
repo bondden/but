@@ -1,9 +1,44 @@
+syntax: glob
+
+#vendor/
+!vendor/**/*.exe
+
+# ESF
+
+.idea
+.dld
+.pcs
+.vmgate/*.vpp~*
+.tmp
+~*
+
+logs
+*.log
+
+build/Release
+node_modules
+
+#NodeJs
+
+npm-debug.log
+temp/
+
+pids
+*.pid
+*.seed
+
+lib-cov
+coverage
+.grunt
+.lock-wscript
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
 
 # Folder config file
 Desktop.ini
+desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/

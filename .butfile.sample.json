@@ -1,0 +1,36 @@
+{
+	"schemaVersion":"0.2.0",
+	"log":true,
+	"update":{
+		"paths":[
+			{
+				"fromUrl"   :"http://some-url.com/someFile.ext",
+				"toInstall" :"localPath/localFile.ext"
+			}
+		],
+		"basicAuth":{
+			"user":"userName",
+			"pass":"userPassword"
+		}
+	},
+	"backup":{
+		"description":"Config for Yandex.Disk",
+		"token":"yandexDiskToken",
+		"url":"https://cloud-api.yandex.net/v1/disk/",
+		"pathsToBackup":[
+			"localPath1",
+			"localPath2"
+		],
+		"tmpDir":"localPathForTmpFiles",
+		"remoteRoot":"remotePath",
+		"crypt":{
+			"alg":"aes-256-ctr",
+			"pass":"password"
+		},
+		"maxRemoteVersions":3
+	},
+	"restore":{
+		"pathSrc":"localPathForTmpFiles",
+		"pathDst":"localPathForUnpackedFiles"
+	}
+}
