@@ -35,13 +35,13 @@
     "npm": ">=1.2.10"
   },
   "files": [
-    "index.js",
-    "vendor",
-    "butfile.js",
-    "test",
-    ".editorconfig",
-    ".gitattributes",
-    ".gitignore"
+    "./index.js",
+    "./vendor",
+    "./butfile.js",
+    "./test",
+    "./.editorconfig",
+    "./.gitattributes",
+    "./.gitignore"
   ],
   "license": "MIT"
 }
