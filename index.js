@@ -52,9 +52,25 @@ var
 	},
 
 	logFilter = function(s){
-		var censorNote='FILTERED';
-		s=s.replace(/"pass"\s*:\s*"(.+)"/ig,'"pass":"'+censorNote+'"');
-		return s.replace(/"token"\s*:\s*"(.+)"/ig,'"token":"'+censorNote+'"');
+		var
+			censorNote='FILTERED',
+			censoredKeys=[
+				'pass',
+				'password',
+				'userPass',
+				'userPassword',
+				'token'
+			]
+		;
+
+		for(var i=0,l=censoredKeys.length;i<l;i++){
+			s=s.replace(
+				new RegExp('"'+censoredKeys[i]+'"\s*:\s*"([^"]+)"',"ig"),
+				'"'+censoredKeys[i]+'":"'+censorNote+'"'
+			);
+		}
+
+		return s;
 	},
 
 	log       = function(s){
@@ -168,7 +184,7 @@ var
 
 			loadSettings().then(function(r){
 
-				log('initializing Yandex.Disk ');
+				log('initializing Yandex.Disk');
 
 				try{
 					var YandexDisk=require('yandex-disk').YandexDisk;
