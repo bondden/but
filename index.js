@@ -17,11 +17,43 @@ var
 	crypt     = require('crypto'),
 
 	fse       = require('fs-extra'),
-	z7        = require('node-7z'),
+	z7        = require('node-7z-esf'),
+
+	clc       = require('cli-color'),
 
 	settings  = false,
 	date      = '0000-00-00-00-00-00',
 	encrypt   = false,
+
+	/**
+	 * Converts local paths in settings to absolute according butfile.json schema v.0.2.0
+	 */
+	absolutizePaths=function(){
+
+		var aP=function(p){
+			if(!path.isAbsolute(p)){
+				p=path.resolve(__dirname+'/../../'+p).replace(/\\/ig,'/');
+			}
+			return p;
+		};
+
+		settings.update.paths.forEach(function(p){
+			p.toInstall=aP(p.toInstall);
+		});
+		settings.backup.pathsToBackup.forEach(function(p){
+			p=aP(p);
+		});
+		settings.backup.tmpDir=aP(settings.backup.tmpDir);
+		settings.restore.pathSrc=aP(settings.restore.pathSrc);
+		settings.restore.pathDst=aP(settings.restore.pathDst);
+
+	},
+
+	setZipExecutable=function(){
+		if(settings.hasOwnProperty('zipExecutable')){
+			global.gNode7zEsf=settings.zipExecutable;
+		}
+	},
 
 	loadSettings=function(){
 
@@ -42,6 +74,10 @@ var
 				date=getDateFormatted();
 				if(encrypt!==false)return;
 				encrypt=crypt.createCipher(settings.backup.crypt.alg, settings.backup.crypt.pass);
+
+				absolutizePaths();
+
+				setZipExecutable();
 
 				rs(settings);
 
@@ -64,7 +100,7 @@ var
 		;
 
 		for(var i=0,l=censoredKeys.length;i<l;i++){
-			s=s.replace(
+			s=(s+'').replace(
 				new RegExp('"'+censoredKeys[i]+'"\s*:\s*"([^"]+)"',"ig"),
 				'"'+censoredKeys[i]+'":"'+censorNote+'"'
 			);
@@ -77,13 +113,36 @@ var
 
 		if(!settings.log)return;
 
-		var d=new Date();
+		var
+			styles={
+				'ne':clc.white,
+				'er':clc.red,
+				'ok':clc.green,
+				'em':clc.yellow,
+				'mb':clc.magentaBright,
+				'sh':clc.whiteBright
+			},
+			style='ne',
+			apx  =false
+		;
 
+		//set console style style
+		if(s instanceof Error){
+			style='er';
+			apx='\n'+s.stack;
+		}
+
+		//set log format
 		if(typeof s === 'object'){
 			s=JSON.stringify(s);
+			if(apx){
+				s+=apx;
+			}
 		}
 
 		s=logFilter(s);
+
+		var d=new Date();
 
 		fs.appendFile(
 			'butlog.log',
@@ -93,8 +152,14 @@ var
 			}
 		);
 
-		console.log('but.log: '+s);
+		console.log(styles[style]('but.log: '+s));
 
+	},
+
+	rej =function(message,error,rejectHandler){
+		log(message);
+		log(error);
+		rejectHandler(error);
 	},
 
 	dldFile   = function(pathData,pathNum,updaterSettings){
@@ -122,14 +187,12 @@ var
 						rs(true);
 
 					}).on('error',function(e){
-						log('Error dldFile.1');
-						rj(e);
+						rej('Error dldFile.1',e,rj);
 					});
 				});
 
 			}catch(e){
-				log('Error dldFile.2');
-				rj(e);
+				rej('Error dldFile.2',e,rj);
 			}
 
 		});
@@ -138,7 +201,7 @@ var
 
 	download  = function(){
 
-		log('\n\nStarting Downloader');
+		log('\n\nStarting Downloader\n');
 
 		return new Promise(function(rs,rj){
 
@@ -154,13 +217,11 @@ var
 					log('Downloader ready with result:\n'+JSON.stringify(r));
 					rs(r);
 				}).catch(function(e){
-					log('Downloader error:\n'+JSON.stringify(e));
-					rj(e);
+					rej('Downloader error:\n',e,rj);
 				});
 
 			}).catch(function(e){
-				log('Settings loading error:\n'+JSON.stringify(e));
-				rj(e);
+				rej('Settings loading error:\n',e,rj);
 			});
 
 		});
@@ -178,7 +239,7 @@ var
 
 	sendFilesToYaDisk =function(){
 
-		log('\n\nSending files to Yandex.Disk');
+		log('\n\nSending files to Yandex.Disk\n');
 
 		return new Promise(function(rs,rj){
 
@@ -193,9 +254,7 @@ var
 					var d        =settings.backup.tmpDir.substring(0,settings.backup.tmpDir.length-1);
 					var remoteDir=settings.backup.remoteRoot+date;
 				}catch(e){
-					log('Error sendFilesToYaDisk.1:');
-					log(e);
-					rj(e);
+					rej('Error sendFilesToYaDisk.1:',e,rj);
 				}
 
 				var actions={
@@ -210,9 +269,7 @@ var
 									log('ok');
 									rs1('ok');
 								}else{
-									log('Error sendFilesToYaDisk.actions.1:');
-									log(e.stack);
-									rj1(e);
+									rej('Error sendFilesToYaDisk.actions.1:',e,rj);
 								}
 							});
 
@@ -227,9 +284,7 @@ var
 							try{
 								var files=fs.readdirSync(d);
 							}catch(e1){
-								log('Error sendFilesToYaDisk.actions.2:');
-								log(e1);
-								rj1(e1);
+								rej('Error sendFilesToYaDisk.actions.2:',e1,rj1);
 								throw e1;
 							}
 
@@ -243,7 +298,7 @@ var
 							Promise.all(waiter).then(function(r){
 								rs1(r);
 							}).catch(function(e){
-								rj1(e);
+								rej('Error sendFilesToYaDisk.actions.3:',e,rj1);
 							});
 
 						});
@@ -260,9 +315,7 @@ var
 										log('uploaded file '+file);
 										rs1(file);
 									}else{
-										log('Error sendFilesToYaDisk.actions.3:');
-										log(e);
-										rj1(e);
+										rej('Error sendFilesToYaDisk.actions.4:',e,rj1);
 									}
 								});
 
@@ -326,9 +379,7 @@ var
 									}
 
 								}else{
-									log('Error sendFilesToYaDisk.actions.4:');
-									log(e);
-									rj1(e);
+									rej('Error sendFilesToYaDisk.actions.5:',e,rj1);
 								}
 							});
 							//fse.emptyDirSync(settings.backup.tmpDir);
@@ -348,27 +399,65 @@ var
 							rs(r2);
 
 						}).catch(function(e){
-							log('Error sendFilesToYaDisk.2:');
-							log(e);
-							rj(e);
+							rej('Error sendFilesToYaDisk.3:',e,rj);
 						});
 
 					}).catch(function(e){
-						log('Error sendFilesToYaDisk.3:');
-						log(e);
-						rj(e);
+						rej('Error sendFilesToYaDisk.4:',e,rj);
 					});
 
 				}).catch(function(e){
-					log('Error sendFilesToYaDisk.4:');
-					log(e);
-					rj(e);
+					rej('Error sendFilesToYaDisk.5:',e,rj);
 				});
 
 			}).catch(function(e){
-				log('Error sendFilesToYaDisk.5:');
-				log(e);
-				rj(e);
+				rej('Error sendFilesToYaDisk.6:',e,rj);
+			});
+
+		});
+
+	},
+
+	archivePath =function(p){
+
+		return new Promise(function(rs,rj){
+
+			fs.exists(p,function(exists){
+				if(!exists){
+					rej('path: '+p+' doesn`t exist',new Error('path: '+p+' doesn`t exist'),rj);
+				}else{
+
+					try{
+
+						var z = new z7();
+
+						z.add(
+							settings.backup.tmpDir.replace(/\/+$/,'')+'/'+encodeURIComponent(p)+'.zip',
+							p,
+							{
+								p:    settings.backup.crypt.pass,
+								ssw:  true
+								//m:    'he'
+							}
+						)/*.process(function(fls){
+
+							console.log('zip process:');
+							console.log(fls);
+
+						})*/.then(function(){
+
+							log('zipped: '+p);
+							rs('zipped: '+p);
+
+						}).catch(function(er){
+							rej('Error zip.1:',er,rj);
+						});
+
+					}catch(zErr){
+						rej('Error zip.2:',zErr,rj);
+					}
+
+				}
 			});
 
 		});
@@ -377,7 +466,7 @@ var
 
 	backup  = function(){
 
-		log('\n\nStarting backup');
+		log('\n\nStarting backup\n');
 
 		return new Promise(function(rs,rj){
 
@@ -388,62 +477,44 @@ var
 				//1. prepare dirs
 				fse.emptyDirSync(settings.backup.tmpDir);
 
-				//2. pack
-				var c=0;
-				var cOk=0;
-				var l=settings.backup.pathsToBackup.length;
+				var queue=[];
 
-				settings.backup.pathsToBackup.forEach(function(path,i){
+				settings.backup.pathsToBackup.forEach(function(p){
 
-					var z = new z7();
-					z.add(
-						settings.backup.tmpDir+encodeURIComponent(path)+'.zip',
-						path,
-						{
-							p:    settings.backup.crypt.pass,
-							ssw:  true
-							//m:    'he'
-						}
-					).then(function(){
-						log('zipped: '+path);
-						//3. send, when all've been saved
+					//2. pack
+					archivePath(p).then(function(r1){
+						//3. send
+						queue.push(sendFilesToYaDisk());
 
-						sendFilesToYaDisk().then(function(r){
-							cOk++;
-						}).catch(function(e){
-							log('Error backup.2:');
-							log(e);
-						});
+					}).catch(function(e1){
 
-					}).catch(function(er){
 						log('Error backup.3:');
-						log('Error archiving files:');
-						log(er);
-					});
+						log(e1);
+						queue.push(new Promise(function(rse,rje){
+							rje(e1);
+						}));
 
-					c++;
-					if(c===l){
-						if(cOk==l){
-							rs('ok');
-						}else{
-							rj(new Error('Error archiving and saving files to Yandex.Disk'));
-						}
-					}
+					});
 
 				});
 
+				Promise.all(queue).then(function(rq){
+					rs('ok');
+				}).catch(function(eq){
+					rj(new Error('Error archiving and saving files to Yandex.Disk'));
+				});
+
 			}).catch(function(e){
-				log('Error backup.1:');
-				log(e);
-				rj(e);
+				rej('Error backup.1:',e,rj);
 			});
+
 		});
 
 	},
 
 	restore = function(){
 
-		log('\n\nStarting restore');
+		log('\n\nStarting restore\n');
 
 		return new Promise(function(rs,rj){
 
@@ -461,9 +532,7 @@ var
 				fs.readdir(settings.restore.pathSrc,function(err, files){
 
 					if(err){
-						log('Error restore.1:');
-						log(err);
-						rj(err);
+						rej('Error restore.1:',err,rj);
 						return;
 					}
 
@@ -482,9 +551,7 @@ var
 								log('unpacked: '+path);
 								rs(path);
 							}).catch(function(er){
-								log('Error restore.1:');
-								log(er);
-								rj(er);
+								rej('Error restore.2:',er,rj);
 							});
 
 						}

@@ -1,6 +1,7 @@
 {
-	"schemaVersion":"0.2.0",
+	"schemaVersion":"0.3.0",
 	"log":true,
+	"zipExecutable":"vendor/7z/",
 	"update":{
 		"paths":[
 			{
