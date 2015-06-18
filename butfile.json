@@ -1,7 +1,7 @@
 {
 	"schemaVersion":"0.3.0",
 	"log":true,
-	"zipExecutable":"vendor/7z/",
+	"zipExecutable":"node_modules/esf-but/vendor/7z/",
 	"update":{
 		"paths":[
 			{

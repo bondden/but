@@ -26,7 +26,7 @@ var
 	encrypt   = false,
 
 	/**
-	 * Converts local paths in settings to absolute according butfile.json schema v.0.2.0
+	 * Converts local paths in settings to absolute according butfile.json schema v.0.3.0
 	 */
 	absolutizePaths=function(){
 
@@ -37,15 +37,21 @@ var
 			return p;
 		};
 
-		settings.update.paths.forEach(function(p){
-			p.toInstall=aP(p.toInstall);
+		settings.update.paths.forEach(function(p,i){
+			settings.update.paths[i].toInstall=aP(p.toInstall);
 		});
-		settings.backup.pathsToBackup.forEach(function(p){
-			p=aP(p);
+
+		settings.backup.pathsToBackup.forEach(function(p,i){
+			settings.backup.pathsToBackup[i]=aP(p);
 		});
+
 		settings.backup.tmpDir=aP(settings.backup.tmpDir);
 		settings.restore.pathSrc=aP(settings.restore.pathSrc);
 		settings.restore.pathDst=aP(settings.restore.pathDst);
+
+		if(settings.hasOwnProperty('zipExecutable')){
+			settings.zipExecutable=aP(settings.zipExecutable);
+		}
 
 	},
 
