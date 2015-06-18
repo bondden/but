@@ -2,6 +2,7 @@
  * Author: Denis Bondarenko <bond.den@gmail.com>
  * Created: 26.03.2015 20:26
  */
+
 'use strict';
 
 var
@@ -18,6 +19,7 @@ var
 describe('BUT Test Suite',function(){
 
 	it('butfile.json should exist',function(done){
+		//todo: butfile.json should exist in app folder, not the module folder
 		fs.exists(butfile,function(exists){
 			expect(exists).to.be.true;
 			done();

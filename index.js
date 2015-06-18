@@ -32,7 +32,11 @@ var
 			}
 
 			fs.readFile('butfile.json', {'encoding':'utf8'},function(e,settingsRaw){
-				if(e)rj(e);
+
+				if(e){
+					log('Error loadSettings.1');
+					rj(e);
+				}
 
 				settings=JSON.parse(settingsRaw);
 				date=getDateFormatted();
@@ -47,6 +51,12 @@ var
 
 	},
 
+	logFilter = function(s){
+		var censorNote='FILTERED';
+		s=s.replace(/"pass"\s*:\s*"(.+)"/ig,'"pass":"'+censorNote+'"');
+		return s.replace(/"token"\s*:\s*"(.+)"/ig,'"token":"'+censorNote+'"');
+	},
+
 	log       = function(s){
 
 		if(!settings.log)return;
@@ -57,6 +67,8 @@ var
 			s=JSON.stringify(s);
 		}
 
+		s=logFilter(s);
+
 		fs.appendFile(
 			'butlog.log',
 			d.toUTCString()+'\t'+s+'\n',
@@ -65,7 +77,7 @@ var
 			}
 		);
 
-		console.log('log: '+s);
+		console.log('but.log: '+s);
 
 	},
 
@@ -110,6 +122,8 @@ var
 
 	download  = function(){
 
+		log('\n\nStarting Downloader');
+
 		return new Promise(function(rs,rj){
 
 			loadSettings().then(function(r){
@@ -147,6 +161,8 @@ var
 	},
 
 	sendFilesToYaDisk =function(){
+
+		log('\n\nSending files to Yandex.Disk');
 
 		return new Promise(function(rs,rj){
 
@@ -345,6 +361,8 @@ var
 
 	backup  = function(){
 
+		log('\n\nStarting backup');
+
 		return new Promise(function(rs,rj){
 
 			loadSettings().then(function(r){
@@ -377,11 +395,14 @@ var
 						sendFilesToYaDisk().then(function(r){
 							cOk++;
 						}).catch(function(e){
-
+							log('Error backup.2:');
+							log(e);
 						});
 
 					}).catch(function(er){
-					 log(er);
+						log('Error backup.3:');
+						log('Error archiving files:');
+						log(er);
 					});
 
 					c++;
@@ -389,7 +410,7 @@ var
 						if(cOk==l){
 							rs('ok');
 						}else{
-							rj(new Error('Error saving files to Yandex.Disk'));
+							rj(new Error('Error archiving and saving files to Yandex.Disk'));
 						}
 					}
 
@@ -406,9 +427,13 @@ var
 
 	restore = function(){
 
+		log('\n\nStarting restore');
+
 		return new Promise(function(rs,rj){
 
 			loadSettings().then(function(r){
+
+				log('Restore started with settings: '+JSON.stringify(settings.restore));
 
 				try{
 					var files = fs.readdirSync(settings.restore.pathSrc);
