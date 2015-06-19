@@ -25,6 +25,9 @@ var
 	date      = '0000-00-00-00-00-00',
 	encrypt   = false,
 
+	stripSlash=function(pathName){
+		return pathName.replace(/\/+$/,'');
+	},
 	/**
 	 * Converts local paths in settings to absolute according butfile.json schema v.0.3.0
 	 */
@@ -257,7 +260,7 @@ var
 					var YandexDisk=require('yandex-disk').YandexDisk;
 					var disk      =new YandexDisk(settings.backup.token);
 
-					var d        =settings.backup.tmpDir.substring(0,settings.backup.tmpDir.length-1);
+					var d        =stripSlash(settings.backup.tmpDir);
 					var remoteDir=settings.backup.remoteRoot+date;
 				}catch(e){
 					rej('Error sendFilesToYaDisk.1:',e,rj);
@@ -331,62 +334,70 @@ var
 					},
 
 					clean:function(disk){
+
+						var removeObsoletePath=function(p){
+
+							return new Promise(function(rs2,rj2){
+
+								disk.remove(settings.backup.remoteRoot+p,function(e2,r2){
+
+									if(e2){
+										rej('Error cleaning remote directory. See but.log for details.',e2,rj2);
+										return;
+
+									}
+
+									log('removed obsolete remote '+p);
+									rs2(r2);
+
+								});
+
+							});
+
+						};
+
 						return new Promise(function(rs1,rj1){
 
 							log('cleaning');
 
 							disk.readdir(settings.backup.remoteRoot,function(e,r){
-								if(!e){
 
-									if(typeof r==='object' && Array.isArray(r)){
-										if(r.length>settings.backup.maxRemoteVersions){
-
-											var m=[];
-											r.forEach(function(v){
-												m.push(v.displayName);
-											});
-											m.sort();
-
-											var surplus=m.length-settings.backup.maxRemoteVersions;
-											var ex     =m.slice(0,surplus);
-
-											var exL =ex.length;
-											var exC =0;
-											var exOC=0;
-
-											log(ex);
-											ex.forEach(function(td){
-
-												disk.remove(settings.backup.remoteRoot+td,function(e2,r2){
-
-													if(!e2){
-
-														log('removed obsolete remote '+td);
-														exC++;
-
-													}else{
-														log(e2);
-													}
-
-													exOC++;
-													if(exOC===exL){
-														if(exC===exL){
-															rs1('ok');
-														}else{
-															rj1(new Error('Error cleaning remote directory. See but.log for details.'));
-														}
-													}
-
-												});
-
-											});
-
-										}
-									}
-
-								}else{
+								if(e){
+									console.trace(e);
 									rej('Error sendFilesToYaDisk.actions.5:',e,rj1);
+									return;
 								}
+
+								if(typeof r!=='object' || !Array.isArray(r)){
+									rej('Error sendFilesToYaDisk.actions.6:',e,rj1);
+									return;
+								}
+
+								if(r.length>settings.backup.maxRemoteVersions){
+
+									var m=[];
+									r.forEach(function(v){
+										m.push(v.displayName);
+									});
+									m.sort();
+
+									var surplus=m.length-settings.backup.maxRemoteVersions;
+									var ex     =m.slice(0,surplus);
+									var waiters=[];
+
+									log(ex);
+									ex.forEach(function(td){
+										waiters.push(removeObsoletePath(td));
+									});
+
+									Promise.all(waiters).then(function(r3){
+										rs1(r3);
+									}).catch(function(e3){
+										rej('Error cleaning remote paths. See but.log for details.',e3,rj1);
+									});
+
+								}
+
 							});
 							//fse.emptyDirSync(settings.backup.tmpDir);
 
@@ -438,7 +449,7 @@ var
 						var z = new z7();
 
 						z.add(
-							settings.backup.tmpDir.replace(/\/+$/,'')+'/'+encodeURIComponent(p)+'.zip',
+							stripSlash(settings.backup.tmpDir)+'/'+encodeURIComponent(p)+'.zip',
 							p,
 							{
 								p:    settings.backup.crypt.pass,
@@ -505,9 +516,9 @@ var
 				});
 
 				Promise.all(queue).then(function(rq){
-					rs('ok');
+					rs(rq);
 				}).catch(function(eq){
-					rj(new Error('Error archiving and saving files to Yandex.Disk'));
+					rej('Error archiving and saving files to Yandex.Disk',eq,rj);
 				});
 
 			}).catch(function(e){
